@@ -1,23 +1,33 @@
 //create web server
-var express = require('express');
-var bodyParser = require('body-parser');
-var app = express();
+//npm install express
+//npm install body-parser
+//npm install cors
 
-//set port
-app.set('port', (process.env.PORT || 5000));
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const app = express();
 
-//body parser middleware
-app.use(bodyParser.urlencoded({ extended: false }));
+//middleware
 app.use(bodyParser.json());
+app.use(cors());
 
-//set route
-app.post('/comment', function (req, res) {
-    console.log(req.body);
-    res.send('post request to homepage');
+const comments = require('./comments.json');
+
+app.get('/comments', (req, res) => {
+    res.send(comments);
 });
 
-//start server
-app.listen(app.get('port'), function () {
-    console.log('Server started on port ' + app.get('port'));
+app.post('/comments', (req, res) => {
+    const comment = {
+        id: comments.length + 1,
+        name: req.body.name,
+        comment: req.body.comment
+    };
+
+    comments.push(comment);
+    res.send(comment);
 });
 
+const port = process.env.PORT || 8080;
+app.listen(port, () => console.log(`Listening on port ${port}...`));
